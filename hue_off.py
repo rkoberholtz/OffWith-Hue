@@ -15,7 +15,7 @@ def main(argv):
 
 	# Parse the options
 	try:
-		opts, args = getopt.getopt(argv,"hb:ciu:",["bridge=","createuser=","interval=","username="])
+		opts, args = getopt.getopt(argv,"hb:ci:u:",["bridge=","createuser=","interval=","username="])
 	except getopt.GetoptError:
 		optUsage()
 		sys.exit(2)
@@ -42,12 +42,13 @@ def main(argv):
 		sys.exit(2)
 
 	# Debugging
-	#print "Bridge IP: %s" % bridge
-	#print "Createuser: %s" % createuser
-	#print "Username: %s" % username
-	#raw_input("Press enter to continue")
+	print "Bridge IP: %s" % bridge
+	print "Createuser: %s" % createuser
+	print "Username: %s" % username
+	raw_input("Press enter to continue")	
 	
 	if createuser:
+		print "You've requested to create a new user.  Creating..."
 		while True:
 			try:
 				username = create_new_username(bridge)
@@ -59,7 +60,8 @@ def main(argv):
 	# Main guts of the program
 	# Start an endless loop
 #	while run:
-		
+	lights(bridge)
+	raw_input("Press Enter")
 
 
 
@@ -72,6 +74,13 @@ def optUsage():
 	print "    -i, --interval | Set how often (in seconds) to check the pwrstatd log. Defaults to 60"
 	print "    -u, --username | Username to be used for Hue Bridge API calls"
 	return 0
+
+def getLightstatus(bridge):
+	# This function will get the current status of all the Hue lights (whether or not they are on or off)
+	
+	lights = bridge.lights
+	print lights()
+	
 
 if __name__ == "__main__":
 	main(sys.argv[1:])
