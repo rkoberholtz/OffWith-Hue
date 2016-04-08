@@ -34,15 +34,6 @@ def main(argv):
 		elif opt in ("-u", "--username"):
 			username = arg
 
-	# Display error if user did not specify a username or ask to create one
-	"""if (username == "") & (createuser == False):
-		print "Error: No username specified!"
-		sys.exit(2)
-	# Display error if user specified a username AND asked to create one
-	elif (username != "") & (createuser == True):
-		print "Error: Can't create new user when username is specified!"
-		sys.exit(2)
-	"""
 	"""	
 	# Debugging
 	print "Bridge IP: %s" % bridgeIP
@@ -68,20 +59,20 @@ def main(argv):
 	# Start an endless loop
 	#while run:
 	
-	lights_list = bridge.get_light_objects('list')
+	try:
+		lights_list = bridge.get_light_objects('list')
 
-	for light in lights_list:
-		if light.on:
-			print(light.name)
-	
-	# Store list of lights that are currently off
-	for light in lights_list:
-		if not light.on:
-			off_lights.append(light)
-
+		# Store list of lights that are currently off
+		for light in lights_list:
+			if not light.on:
+				off_lights.append(light)
+	except:
+		print "Bridge unavailable"
+	"""
+	# Print the name of the lights that are Off
 	for light in off_lights:
 		print(light.name)		
-
+	"""
 
 	raw_input("Press Enter")
 
