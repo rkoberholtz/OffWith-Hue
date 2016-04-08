@@ -8,7 +8,9 @@ def main(argv):
 	bridgeIP = "0"
 	username = ""
 	createuser = False
+	off_lights = []
 	run = True
+		
 
 	# How often (in seconds) to check the pwrstatd log for events
 	check_interval = 60
@@ -71,6 +73,14 @@ def main(argv):
 	for light in lights_list:
 		if light.on:
 			print(light.name)
+	
+	# Store list of lights that are currently off
+	for light in lights_list:
+		if not light.on:
+			off_lights.append(light)
+
+	for light in off_lights:
+		print(light.name)		
 
 
 	raw_input("Press Enter")
