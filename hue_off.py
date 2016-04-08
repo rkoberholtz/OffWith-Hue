@@ -76,7 +76,7 @@ def main(argv):
 		powerfailure = checkPowerOutage()
 		
 		if powerfailure:
-			waitSetlights(off_lights)
+			waitSetlights(off_lights,check_interval)
 		
 		time.sleep(check_interval)	
 		
