@@ -1,7 +1,6 @@
 import sys
 import getopt
-from qhue import Bridge
-from qhue import create_new_username
+from qhue import Bridge, create_new_username, QhueException
 
 def main(argv):
 
@@ -9,7 +8,8 @@ def main(argv):
 	bridge = "0"
 	username = ""
 	createuser = False
-	
+	run = True
+
 	# How often (in seconds) to check the pwrstatd log for events
 	check_interval = 60
 
@@ -48,15 +48,20 @@ def main(argv):
 	#raw_input("Press enter to continue")
 	
 	if createuser:
-		username = createUsername(bridge)
-
-def createUsername(bridge):
-	# This function will create a new user account on the Hue bridge
-	# only if the '-c' argument is passed
+		while True:
+			try:
+				username = create_new_username(bridge)
+				break
+			except QhueException as err:
+				print "Error occurred while creating a new username: {}".format(err)
 	
-	username = create_new_username("192.168.0.45")
-	print "Your Username is: %s" % username
-	return username
+
+	# Main guts of the program
+	# Start an endless loop
+#	while run:
+		
+
+
 
 def optUsage():
 	# This function displays options usage information
