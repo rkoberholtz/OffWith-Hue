@@ -107,9 +107,11 @@ def checkPowerOutage():
 	pwrstatus = commands.getstatusoutput("pwrstat -status | grep 'Power Supply'")
         if "Utility" not in pwrstatus[1]:
 	        # We have a power failure!
+		print "Power outage detected!"
                 return True
         else:
                 # No power failure... some other problem.  Don't touch the lights.
+		print "Still on mains power"
 		return False
 	
 def waitSetlights(off_lights,check_interval):
