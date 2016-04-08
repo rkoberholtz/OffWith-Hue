@@ -33,7 +33,7 @@ def main(argv):
 		elif opt in ("-c", "--createuser"):
 			createuser = True
 		elif opt in ("-i", "--interval"):
-			check_interval = arg
+			check_interval = float(arg)
 		elif opt in ("-u", "--username"):
 			username = arg
 
