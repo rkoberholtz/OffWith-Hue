@@ -1,11 +1,11 @@
 import sys
 import getopt
-from qhue import Bridge, create_new_username, QhueException
+from phue import Bridge
 
 def main(argv):
 
 	# IP address of your Hue Bridge
-	bridge = "0"
+	bridgeIP = "0"
 	username = ""
 	createuser = False
 	run = True
@@ -24,7 +24,7 @@ def main(argv):
 			optUsage()
 			sys.exit()
 		elif opt in ("-b", "--bridge"):
-			bridge = arg
+			bridgeIP = arg
 		elif opt in ("-c", "--createuser"):
 			createuser = True
 		elif opt in ("-i", "--interval"):
@@ -33,34 +33,46 @@ def main(argv):
 			username = arg
 
 	# Display error if user did not specify a username or ask to create one
-	if (username == "") & (createuser == False):
+	"""if (username == "") & (createuser == False):
 		print "Error: No username specified!"
 		sys.exit(2)
 	# Display error if user specified a username AND asked to create one
 	elif (username != "") & (createuser == True):
 		print "Error: Can't create new user when username is specified!"
 		sys.exit(2)
-
+	"""
+	"""	
 	# Debugging
-	print "Bridge IP: %s" % bridge
+	print "Bridge IP: %s" % bridgeIP
 	print "Createuser: %s" % createuser
 	print "Username: %s" % username
 	raw_input("Press enter to continue")	
-	
+	"""	
+
+	try:
+		bridge = Bridge(bridgeIP)	
+	except:
+		print "Error, App not registered.  Press Bridge button and try again."	
+
 	if createuser:
 		print "You've requested to create a new user.  Creating..."
-		while True:
-			try:
-				username = create_new_username(bridge)
-				break
-			except QhueException as err:
-				print "Error occurred while creating a new username: {}".format(err)
+		print "Press the button on your Bridge, then press Enter."
+		bridge.connect()
 	
+	print bridge.get_api()
+	raw_input("Press a key to continue")
 
 	# Main guts of the program
 	# Start an endless loop
-#	while run:
-	lights(bridge)
+	#while run:
+	
+	lights_list = bridge.get_light_objects('list')
+
+	for light in lights_list:
+		if light.on:
+			print(light.name)
+
+
 	raw_input("Press Enter")
 
 
