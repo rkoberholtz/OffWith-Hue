@@ -1,6 +1,8 @@
 import sys
 import getopt
 from phue import Bridge
+import commands
+import time
 
 def main(argv):
 
@@ -9,6 +11,7 @@ def main(argv):
 	username = ""
 	createuser = False
 	off_lights = []
+	powerfailure = False
 	run = True
 		
 
@@ -52,22 +55,32 @@ def main(argv):
 		print "Press the button on your Bridge, then press Enter."
 		bridge.connect()
 	
-	print bridge.get_api()
-	raw_input("Press a key to continue")
-
 	# Main guts of the program
 	# Start an endless loop
-	#while run:
+	while run:
 	
-	try:
-		lights_list = bridge.get_light_objects('list')
+		try:
+			lights_list = bridge.get_light_objects('list')
 
-		# Store list of lights that are currently off
-		for light in lights_list:
-			if not light.on:
-				off_lights.append(light)
-	except:
-		print "Bridge unavailable"
+			# Store list of lights that are currently off
+			off_lights = []
+			for light in lights_list:
+				if not light.on:
+					off_lights.append(light)
+		except:
+			# Bridge unavailable, Power failure?
+			print "Connection to Hue Bridge has failed... is the power out?"
+			powerfailure = checkPowerOutage()
+	
+		# Check power status
+		powerfailure = checkPowerOutage()
+		
+		if powerfailure:
+			waitSetlights(off_lights)
+		
+		time.sleep(check_interval)	
+		
+	# End of endless loop
 	"""
 	# Print the name of the lights that are Off
 	for light in off_lights:
@@ -88,12 +101,30 @@ def optUsage():
 	print "    -u, --username | Username to be used for Hue Bridge API calls"
 	return 0
 
-def getLightstatus(bridge):
-	# This function will get the current status of all the Hue lights (whether or not they are on or off)
+def checkPowerOutage():
+	# This function checks the current pwrstatd process to see if we're on utility power or not.
+
+	pwrstatus = commands.getstatusoutput("pwrstat -status | grep 'Power Supply'")
+        if "Utility" not in pwrstatus[1]:
+	        # We have a power failure!
+                return True
+        else:
+                # No power failure... some other problem.  Don't touch the lights.
+		return False
 	
-	lights = bridge.lights
-	print lights()
+def waitSetlights(off_lights,check_interval):
+	# Periodically check for return to Utility power, and then turn off lights that were off prior to event.
 	
+	while True:
+		
+		backon = checkPowerOutage()
+		if backon:
+			for light in off_lights:
+				light.on = False
+	
+		time.sleep(check_interval)
+	return 0
 
 if __name__ == "__main__":
+
 	main(sys.argv[1:])
