@@ -1,3 +1,37 @@
+#!/bin/python
+
+"""
+  This program uses CyberPower's pwrstatd daemon and the Phue Python library to turn
+    off your Hue lights after a brief power outage.
+
+  The program routinely query's your Hue bridge to a list of lights and stores the ones
+    that are currently off.  It also queries pwrstat to determine if we are running on
+    MAINS or BATTERY power.  When it detects that we are running on BATTERY power, it
+    waits for MAINS power to return, then turns off the Hue lights that were off prior
+    to the outage.
+
+  Created By: 
+	Rich Oberholtzer
+	rich@rickelobe.com
+	https://gitlab.rickelobe.com
+
+Copyright (c) 2016, Richard K. Oberholtzer
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+"""
+
 import sys
 import getopt
 from phue import Bridge
@@ -116,7 +150,6 @@ def checkPowerOutage():
 	
 def waitSetlights(off_lights,check_interval):
 	# Periodically check for return to Utility power, and then turn off lights that were off prior to event.
-	
 	while True:
 		# Loop in here until
 		outage = checkPowerOutage()
