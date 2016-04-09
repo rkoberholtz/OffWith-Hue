@@ -46,8 +46,6 @@ def main(argv):
 	createuser = False
 	off_lights = []
 	powerfailure = False
-	run = True
-		
 
 	# How often (in seconds) to check the pwrstatd log for events
 	check_interval = 60
@@ -91,8 +89,11 @@ def main(argv):
 	
 	# Main guts of the program
 	# Start an endless loop
-	while run:
-	
+	while True:
+		
+		if checkPowerOutage():
+			waitSetlights(off_lights,check_interval)
+		
 		try:
 			lights_list = bridge.get_light_objects('list')
 
@@ -104,17 +105,11 @@ def main(argv):
 		except:
 			# Bridge unavailable, Power failure?
 			print "%s: Connection to Hue Bridge has failed... is the power out?" % datetime()
-			powerfailure = checkPowerOutage()
 	
-		# Check power status
-		powerfailure = checkPowerOutage()
-		
-		if powerfailure:
-			waitSetlights(off_lights,check_interval)
-		
+		#Pause	
 		time.sleep(check_interval)	
 		
-	# End of endless loop
+	# End of endless loop... hmm
 	"""
 	# Print the name of the lights that are Off
 	for light in off_lights:
