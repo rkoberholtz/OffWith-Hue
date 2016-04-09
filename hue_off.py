@@ -150,6 +150,7 @@ def waitSetlights(off_lights,check_interval):
 		outage = checkPowerOutage()
 		if not outage:
 			# Turn off the lights that were off prior to the power outage
+			print "%s: ... Mains power has returned, turning off lights that were not on prior to outage:" % datestamp()
 			for light in off_lights:
 				print "%s: Turning off %s" % (datestamp(), light.name)
 				light.on = False
