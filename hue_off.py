@@ -107,11 +107,11 @@ def checkPowerOutage():
 	pwrstatus = commands.getstatusoutput("pwrstat -status | grep 'Power Supply'")
         if "Utility" not in pwrstatus[1]:
 	        # We have a power failure!
-		print "Mains power: FAILURE"
+		print "%s:Mains power: FAILURE" % datestamp()
                 return True
         else:
                 # No power failure... some other problem.  Don't touch the lights.
-		print "Mains power: OK"
+		print "%s:Mains power: OK" % datestamp()
 		return False
 	
 def waitSetlights(off_lights,check_interval):
@@ -126,6 +126,10 @@ def waitSetlights(off_lights,check_interval):
 	
 		time.sleep(check_interval)
 	return 0
+
+def datestamp():
+	# this function returns a date string formatted as YYYYMMDD-HHMMSS
+	return strftime("%Y%m%d-%H%M%S", gmtime())	
 
 if __name__ == "__main__":
 
