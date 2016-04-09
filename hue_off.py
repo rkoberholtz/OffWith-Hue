@@ -69,7 +69,7 @@ def main(argv):
 					off_lights.append(light)
 		except:
 			# Bridge unavailable, Power failure?
-			print "Connection to Hue Bridge has failed... is the power out?"
+			print "%s: Connection to Hue Bridge has failed... is the power out?" % datetime()
 			powerfailure = checkPowerOutage()
 	
 		# Check power status
@@ -107,29 +107,31 @@ def checkPowerOutage():
 	pwrstatus = commands.getstatusoutput("pwrstat -status | grep 'Power Supply'")
         if "Utility" not in pwrstatus[1]:
 	        # We have a power failure!
-		print "%s:Mains power: FAILURE" % datestamp()
+		print "%s:Mains power FAILURE" % datestamp()
                 return True
         else:
                 # No power failure... some other problem.  Don't touch the lights.
-		print "%s:Mains power: OK" % datestamp()
+		print "%s:Mains power OK" % datestamp()
 		return False
 	
 def waitSetlights(off_lights,check_interval):
 	# Periodically check for return to Utility power, and then turn off lights that were off prior to event.
 	
 	while True:
-		
+		# Loop in here until
 		outage = checkPowerOutage()
 		if not outage:
+			# Turn off the lights that were off prior to the power outage
 			for light in off_lights:
+				print "%s: Turning off %s" % datetime(), light.name
 				light.on = False
-	
+			return 0
 		time.sleep(check_interval)
 	return 0
 
 def datestamp():
 	# this function returns a date string formatted as YYYYMMDD-HHMMSS
-	return strftime("%Y%m%d-%H%M%S", gmtime())	
+	return time.strftime("%Y%m%d-%H%M%S")	
 
 if __name__ == "__main__":
 
