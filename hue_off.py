@@ -42,7 +42,6 @@ def main(argv):
 
 	# IP address of your Hue Bridge
 	bridgeIP = "0"
-	username = ""
 	createuser = False
 	off_lights = []
 	powerfailure = False
@@ -52,7 +51,7 @@ def main(argv):
 
 	# Parse the options
 	try:
-		opts, args = getopt.getopt(argv,"hb:ci:u:",["bridge=","createuser=","interval=","username="])
+		opts, args = getopt.getopt(argv,"hb:ci:",["bridge=","createuser=","interval="])
 	except getopt.GetoptError:
 		optUsage()
 		sys.exit(2)
@@ -66,9 +65,6 @@ def main(argv):
 			createuser = True
 		elif opt in ("-i", "--interval"):
 			check_interval = float(arg)
-		elif opt in ("-u", "--username"):
-			username = arg
-
 	"""	
 	# Debugging
 	print "Bridge IP: %s" % bridgeIP
@@ -127,7 +123,6 @@ def optUsage():
 	print "    -b, --bridge | IP address of your Hue Bridge"
 	print "    -c, --createuser | Create a new user on your Hue Bridge"
 	print "    -i, --interval | Set how often (in seconds) to check the pwrstatd log. Defaults to 60"
-	print "    -u, --username | Username to be used for Hue Bridge API calls"
 	return 0
 
 def checkPowerOutage():
