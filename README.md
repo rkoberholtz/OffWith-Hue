@@ -10,7 +10,7 @@
   This program uses CyberPower's pwrstatd daemon and the Phue Python library to turn
     off your Hue lights after a brief power outage.
 
-  The program routinely query's your Hue bridge to a list of lights and stores the ones
+  The program routinely query's your Hue bridge for a list of lights and stores the ones
     that are currently off.  It also queries pwrstat to determine if we are running on
     MAINS or BATTERY power.  When it detects that we are running on BATTERY power, it
     waits for MAINS power to return, then turns off the Hue lights that were off prior
