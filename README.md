@@ -31,3 +31,6 @@ Options Usage:
 # hue_off.py -b 192.168.1.101
 ```
 
+# Limitations
+1. If the power outage lasts longer than the runtime of your UPS, OffWith-Hue will not be able to turn off the ligts when the power returns. 
+    * This could be remedied by storing the list of lights to be turned off in a file.  Once the computer starts up (assuming the computer and script is set to autostart) the lights can be turned off
