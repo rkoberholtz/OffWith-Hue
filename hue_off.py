@@ -42,7 +42,7 @@ def main(argv):
 
 	# IP address of your Hue Bridge
 	bridgeIP = "0"
-	createuser = False
+	createnew = False
 	off_lights = []
 	powerfailure = False
 
@@ -51,7 +51,7 @@ def main(argv):
 
 	# Parse the options
 	try:
-		opts, args = getopt.getopt(argv,"hb:ci:",["bridge=","createuser=","interval="])
+		opts, args = getopt.getopt(argv,"hb:ci:",["bridge=","createnew=","interval="])
 	except getopt.GetoptError:
 		optUsage()
 		sys.exit(2)
@@ -61,14 +61,14 @@ def main(argv):
 			sys.exit()
 		elif opt in ("-b", "--bridge"):
 			bridgeIP = arg
-		elif opt in ("-c", "--createuser"):
-			createuser = True
+		elif opt in ("-c", "--createnew"):
+			createnew = True
 		elif opt in ("-i", "--interval"):
 			check_interval = float(arg)
 	"""	
 	# Debugging
 	print "Bridge IP: %s" % bridgeIP
-	print "Createuser: %s" % createuser
+	print "Createnew: %s" % createnew
 	print "Username: %s" % username
 	raw_input("Press enter to continue")	
 	"""	
@@ -78,7 +78,7 @@ def main(argv):
 	except:
 		print "Error, App not registered.  Press Bridge button and try again."	
 
-	if createuser:
+	if createnew:
 		print "You've requested to create a new user.  Creating..."
 		print "Press the button on your Bridge, then press Enter."
 		bridge.connect()
@@ -121,7 +121,7 @@ def optUsage():
 
 	print "Options Usage:"
 	print "    -b, --bridge | IP address of your Hue Bridge"
-	print "    -c, --createuser | Create a new user on your Hue Bridge"
+	print "    -c, --createnew | Connect to a new Hue Bridge"
 	print "    -i, --interval | Set how often (in seconds) to check the pwrstatd log. Defaults to 60"
 	return 0
 
