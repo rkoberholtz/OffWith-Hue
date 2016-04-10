@@ -1,6 +1,6 @@
 # Prerequisits
 1. *nix machine
-2. **Phue** python library. Install using pip
+2. **[Phue](https://github.com/studioimaginaire/phue)** python library. Install using pip
 <pre>pip install phue</pre>
 3. A CyberPower UPS device connected to your machine
 4. CyberPower's pwrstatd daemon (PowerPanel)
