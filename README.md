@@ -1,8 +1,9 @@
 # Prerequisits
-1. **Phue** python library. Install using pip
+1. *nix machine
+2. **Phue** python library. Install using pip
 <pre>pip install phue</pre>
-2. A CyberPower UPS device connected to your machine
-3. CyberPower's pwrstatd daemon (PowerPanel)
+3. A CyberPower UPS device connected to your machine
+4. CyberPower's pwrstatd daemon (PowerPanel)
     * Download here: http://www.cyberpower-eu.com/products/software/pp_linux.htm
     
 # Description
