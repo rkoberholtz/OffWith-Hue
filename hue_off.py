@@ -100,6 +100,8 @@ def main(argv):
 			lights_file.truncate()
 			lights_file.write(datestamp())
 			lights_file.write("\n")
+			lights_file.write(bridge)
+			lights_file.write("\n")
 			# Store list of lights that are currently off
 			off_lights = []
 			for light in lights_list:
