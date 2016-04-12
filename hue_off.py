@@ -111,8 +111,8 @@ def main(argv):
 					lights_file.write("\n")
 			lights_file.close()
 		except:
-			# Unhandled exception!
-			print "%s: An Unhandled exception has appeared..." % datestamp()
+			# Unknown exception!
+			print "%s: An unknown exception has appeared..." % datestamp()
 	
 		#Pause	
 		time.sleep(check_interval)	
