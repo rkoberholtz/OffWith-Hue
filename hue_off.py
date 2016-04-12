@@ -101,6 +101,8 @@ def main(argv):
 					off_lights.append(light)
 					lights_file.write(light)
 					lights_file.write("\n")
+		except IOError:
+			print "%s: File IO Error" % datestamp()
 		except:
 			# Bridge unavailable, Power failure?
 			print "%s: Connection to Hue Bridge has failed... is the power out?" % datestamp()
