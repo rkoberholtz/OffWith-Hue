@@ -55,6 +55,10 @@ def main(argv):
 	except getopt.GetoptError:
 		optUsage()
 		sys.exit(2)
+	except ValueError:
+		print "Incorrect option usage!"
+		opUsage()
+		sys.exit(2)
 	for opt, arg in opts:
 		if opt == '-h':
 			optUsage()
@@ -79,7 +83,7 @@ def main(argv):
 		print "Error, App not registered.  Press Bridge button and try again."	
 
 	if createnew:
-		print "You've requested to create a new user.  Creating..."
+		print "You've requested to connect to a new Bridge.  Connecting..."
 		print "Press the button on your Bridge, then press Enter."
 		bridge.connect()
 	
@@ -94,6 +98,8 @@ def main(argv):
 			lights_list = bridge.get_light_objects('list')
 			lights_file = open("off.lights", 'w')
 			lights_file.truncate()
+			lights_file.write(datestamp())
+			lights_file.write("\n")
 			# Store list of lights that are currently off
 			off_lights = []
 			for light in lights_list:
@@ -145,7 +151,7 @@ def checkPowerOutage():
 def waitSetlights(off_lights,check_interval):
 	# Periodically check for return to Utility power, and then turn off lights that were off prior to event.
 	while True:
-		# Loop in here until
+		# Loop in here until mains power returns
 		outage = checkPowerOutage()
 		if not outage:
 			# Turn off the lights that were off prior to the power outage
