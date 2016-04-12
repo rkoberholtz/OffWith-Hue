@@ -76,6 +76,19 @@ def main(argv):
 	print "Username: %s" % username
 	raw_input("Press enter to continue")	
 	"""	
+	
+	"""
+	# Read in status from last time app ran
+	try:
+		with open("off.lights") as f:
+			prev_status = f.readlines()
+	except:
+		print "Error reading file."
+
+	if prev_status[1] == bridge:
+		
+	"""
+		
 
 	try:
 		bridge = Bridge(bridgeIP)	
