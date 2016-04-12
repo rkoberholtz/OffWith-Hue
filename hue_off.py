@@ -92,15 +92,18 @@ def main(argv):
 		
 		try:
 			lights_list = bridge.get_light_objects('list')
-
+			lights_file = open("off.lights", 'w')
+			lights_file.truncate()
 			# Store list of lights that are currently off
 			off_lights = []
 			for light in lights_list:
 				if not light.on:
 					off_lights.append(light)
+					lights_file.write(light)
+					lights_file.write("\n")
 		except:
 			# Bridge unavailable, Power failure?
-			print "%s: Connection to Hue Bridge has failed... is the power out?" % datetime()
+			print "%s: Connection to Hue Bridge has failed... is the power out?" % datestamp()
 	
 		#Pause	
 		time.sleep(check_interval)	
