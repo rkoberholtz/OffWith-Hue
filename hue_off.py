@@ -82,13 +82,18 @@ def main(argv):
 	try:
 		with open("off.lights") as f:
 			prev_status = f.readlines()
+		f.close()
 	except:
 		print "Error reading file."
 
-	if prev_status[1] == bridge:
-		
-	"""
-		
+	for line in prev_status:
+		print(line)
+	raw_input("Press Enter")
+	print(prev_status[1])
+	raw_input("Press Enter Again")
+	#if prev_status[1] == bridge:
+	"""	
+			
 
 	try:
 		bridge = Bridge(bridgeIP)	
@@ -113,7 +118,7 @@ def main(argv):
 			lights_file.truncate()
 			lights_file.write(datestamp())
 			lights_file.write("\n")
-			lights_file.write(bridge)
+			lights_file.write(bridgeIP)
 			lights_file.write("\n")
 			# Store list of lights that are currently off
 			off_lights = []
