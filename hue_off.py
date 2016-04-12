@@ -99,13 +99,12 @@ def main(argv):
 			for light in lights_list:
 				if not light.on:
 					off_lights.append(light)
-					lights_file.write(light)
+					lights_file.write(light.name)
 					lights_file.write("\n")
-		except IOError:
-			print "%s: File IO Error" % datestamp()
+			lights_file.close()
 		except:
-			# Bridge unavailable, Power failure?
-			print "%s: Connection to Hue Bridge has failed... is the power out?" % datestamp()
+			# Unhandled exception!
+			print "%s: An Unhandled exception has appeared..." % datestamp()
 	
 		#Pause	
 		time.sleep(check_interval)	
