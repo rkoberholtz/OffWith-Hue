@@ -77,7 +77,7 @@ def main(argv):
 	raw_input("Press enter to continue")	
 	"""	
 	
-	"""
+	
 	# Read in status from last time app ran
 	try:
 		with open("off.lights") as f:
@@ -87,8 +87,7 @@ def main(argv):
 
 	if prev_status[1] == bridge:
 		
-	"""
-		
+	
 
 	try:
 		bridge = Bridge(bridgeIP)	
