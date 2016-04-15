@@ -77,7 +77,7 @@ def main(argv):
 	raw_input("Press enter to continue")	
 	"""	
 	
-	
+	"""	
 	# Read in status from last time app ran
 	# 
 	try:
@@ -92,13 +92,13 @@ def main(argv):
 	for line in prev_status:
 		print(line)
 	
-	"""
+	
 	raw_input("Press Enter")
 	print(prev_status[1])
 	raw_input("Press Enter Again")
 	#if prev_status[1] == bridge:
-	"""
-			
+	
+	"""		
 
 	try:
 		bridge = Bridge(bridgeIP)	
