@@ -86,7 +86,17 @@ def main(argv):
 		print "Error reading file."
 
 	if prev_status[1] == bridge:
+		# Same bridge as before, apply the light status!
+		lights_list = bridge.get_light_objects('list')
 		
+		# Since the only names in the file are lights that should be off
+		#  let's turn any light name in the file off.
+		print "Searching off.lights for lights that were previously off..."
+		for light in lights_list:
+			for line in prev_status:
+				if light.name == line:
+					light.on = "off"
+					print "Turning off: %s" % line				
 	
 
 	try:
