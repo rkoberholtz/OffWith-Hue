@@ -45,6 +45,7 @@ def main(argv):
 	createnew = False
 	off_lights = []
 	powerfailure = False
+	prev_status = []	
 
 	# How often (in seconds) to check the pwrstatd log for events
 	check_interval = 60
@@ -82,21 +83,24 @@ def main(argv):
 	try:
 		with open("off.lights") as f:
 			prev_status = f.readlines()
+		f.close()
 	except:
 		print "Error reading file."
-
-	if prev_status[1] == bridge:
-		# Same bridge as before, apply the light status!
-		lights_list = bridge.get_light_objects('list')
+	
+	# Check if prev_status contains items
+	if prev_status:
+		if prev_status[1] == bridgeIP:
+			# Same bridge as before, apply the light status!
+			lights_list = bridge.get_light_objects('list')
 		
-		# Since the only names in the file are lights that should be off
-		#  let's turn any light name in the file off.
-		print "Searching off.lights for lights that were previously off..."
-		for light in lights_list:
-			for line in prev_status:
-				if light.name == line:
-					light.on = "off"
-					print "Turning off: %s" % line				
+			# Since the only names in the file are lights that should be off
+			#  let's turn any light name in the file off.
+			print "Searching off.lights for lights that were previously off..."
+			for light in lights_list:
+				for line in prev_status:
+					if light.name == line:
+						light.on = "off"
+						print "Turning off: %s" % line				
 	
 
 	try:
@@ -118,11 +122,17 @@ def main(argv):
 		
 		try:
 			lights_list = bridge.get_light_objects('list')
+			#print "Got list of lights"
 			lights_file = open("off.lights", 'w')
+			#print "Opened off.lights"
 			lights_file.truncate()
+			#print "Truncated off.lights"
 			lights_file.write(datestamp())
+			#print "Wrote datestamp to file"
 			lights_file.write("\n")
-			lights_file.write(bridge)
+			#print "Wrote newline"
+			lights_file.write(bridgeIP)
+			#print "Wrote BridgeIP"
 			lights_file.write("\n")
 			# Store list of lights that are currently off
 			off_lights = []
