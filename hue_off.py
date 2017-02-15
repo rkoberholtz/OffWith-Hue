@@ -74,15 +74,15 @@ def main(argv):
 			check_interval = float(arg)
 		elif opt in ("-m", "--mode"):
 			mode = arg.lower()	
-		
+
+	'''		
 	# Debugging
 	print ("Bridge IP: %s" % bridgeIP)
 	print ("Createnew: %s" % createnew)
 	print ("Username: %s" % username)
 	print ("Mode: %s" % mode)
 	input("Press enter to continue")	
-		
-	
+	'''	
 	
 	# Read in status from last time app ran
 	try:
@@ -122,7 +122,7 @@ def main(argv):
 	# Start an endless loop
 	while True:
 		
-		if checkPowerOutage():
+		if checkCyberPowerOutage():
 			waitSetlights(off_lights,check_interval)
 		
 		try:
@@ -174,7 +174,7 @@ def optUsage():
 	print("    -i, --interval | Set how often (in seconds) to check the pwrstatd log. Defaults to 60")
 	return 0
 
-def checkPowerOutage():
+def checkCyberPowerOutage():
 	# This function checks the current pwrstatd process to see if we're on utility power or not.
 
 	pwrstatus = subprocess.getstatusoutput("pwrstat -status | grep 'Power Supply'")
