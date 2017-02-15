@@ -15,7 +15,7 @@
 	rich@rickelobe.com
 	https://gitlab.rickelobe.com
 
-Copyright (c) 2016, Richard K. Oberholtzer
+Copyright (c) 2017, Richard K. Oberholtzer
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -46,13 +46,15 @@ def main(argv):
 	off_lights = []
 	powerfailure = False
 	prev_status = []	
+	username = ""
+	mode = ""	# Mode Options: cyberpower, nut
 
 	# How often (in seconds) to check the pwrstatd log for events
 	check_interval = 60
 
 	# Parse the options
 	try:
-		opts, args = getopt.getopt(argv,"hb:ci:",["bridge=","createnew=","interval="])
+		opts, args = getopt.getopt(argv,"hb:ci:m:",["bridge=","createnew=","interval=","mode="])
 	except getopt.GetoptError:
 		optUsage()
 		sys.exit(2)
@@ -70,13 +72,16 @@ def main(argv):
 			createnew = True
 		elif opt in ("-i", "--interval"):
 			check_interval = float(arg)
-	"""	
+		elif opt in ("-m", "--mode"):
+			mode = arg.lower()	
+		
 	# Debugging
-	print "Bridge IP: %s" % bridgeIP
-	print "Createnew: %s" % createnew
-	print "Username: %s" % username
-	raw_input("Press enter to continue")	
-	"""	
+	print ("Bridge IP: %s" % bridgeIP)
+	print ("Createnew: %s" % createnew)
+	print ("Username: %s" % username)
+	print ("Mode: %s" % mode)
+	input("Press enter to continue")	
+		
 	
 	
 	# Read in status from last time app ran
