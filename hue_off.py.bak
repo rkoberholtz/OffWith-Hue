@@ -35,7 +35,7 @@ Copyright (c) 2016, Richard K. Oberholtzer
 import sys
 import getopt
 from phue import Bridge
-import subprocess
+import commands
 import time
 
 def main(argv):
@@ -57,7 +57,7 @@ def main(argv):
 		optUsage()
 		sys.exit(2)
 	except ValueError:
-		print("Incorrect option usage!")
+		print "Incorrect option usage!"
 		opUsage()
 		sys.exit(2)
 	for opt, arg in opts:
@@ -85,7 +85,7 @@ def main(argv):
 			prev_status = f.readlines()
 		f.close()
 	except:
-		print("Error reading file.")
+		print "Error reading file."
 	
 	# Check if prev_status contains items
 	if prev_status:
@@ -95,22 +95,22 @@ def main(argv):
 		
 			# Since the only names in the file are lights that should be off
 			#  let's turn any light name in the file off.
-			print("Searching off.lights for lights that were previously off...")
+			print "Searching off.lights for lights that were previously off..."
 			for light in lights_list:
 				for line in prev_status:
 					if light.name == line:
 						light.on = "off"
-						print("Turning off: %s" % line)				
+						print "Turning off: %s" % line				
 	
 
 	try:
 		bridge = Bridge(bridgeIP)	
 	except:
-		print("Error, App not registered.  Press Bridge button and try again.")	
+		print "Error, App not registered.  Press Bridge button and try again."	
 
 	if createnew:
-		print("You've requested to connect to a new Bridge.  Connecting...")
-		print("Press the button on your Bridge, then press Enter.")
+		print "You've requested to connect to a new Bridge.  Connecting..."
+		print "Press the button on your Bridge, then press Enter."
 		bridge.connect()
 	
 	# Main guts of the program
@@ -144,7 +144,7 @@ def main(argv):
 			lights_file.close()
 		except:
 			# Unknown exception!
-			print("%s: An unknown exception has appeared..." % datestamp())
+			print "%s: An unknown exception has appeared..." % datestamp()
 	
 		#Pause	
 		time.sleep(check_interval)	
@@ -156,30 +156,30 @@ def main(argv):
 		print(light.name)		
 	"""
 
-	input("Press Enter")
+	raw_input("Press Enter")
 
 
 
 def optUsage():
 	# This function displays options usage information
 
-	print("Options Usage:")
-	print("    -b, --bridge | IP address of your Hue Bridge")
-	print("    -c, --createnew | Connect to a new Hue Bridge")
-	print("    -i, --interval | Set how often (in seconds) to check the pwrstatd log. Defaults to 60")
+	print "Options Usage:"
+	print "    -b, --bridge | IP address of your Hue Bridge"
+	print "    -c, --createnew | Connect to a new Hue Bridge"
+	print "    -i, --interval | Set how often (in seconds) to check the pwrstatd log. Defaults to 60"
 	return 0
 
 def checkPowerOutage():
 	# This function checks the current pwrstatd process to see if we're on utility power or not.
 
-	pwrstatus = subprocess.getstatusoutput("pwrstat -status | grep 'Power Supply'")
-	if "Utility" not in pwrstatus[1]:
-		# We have a power failure!
-		print("%s:Mains power FAILURE" % datestamp())
-		return True
-	else:
-        	# No power failure... some other problem.  Don't touch the lights.
-		print("%s:Mains power OK" % datestamp())
+	pwrstatus = commands.getstatusoutput("pwrstat -status | grep 'Power Supply'")
+        if "Utility" not in pwrstatus[1]:
+	        # We have a power failure!
+		print "%s:Mains power FAILURE" % datestamp()
+                return True
+        else:
+                # No power failure... some other problem.  Don't touch the lights.
+		print "%s:Mains power OK" % datestamp()
 		return False
 	
 def waitSetlights(off_lights,check_interval):
@@ -189,9 +189,9 @@ def waitSetlights(off_lights,check_interval):
 		outage = checkPowerOutage()
 		if not outage:
 			# Turn off the lights that were off prior to the power outage
-			print("%s: ... Mains power has returned, turning off lights that were not on prior to outage:" % datestamp())
+			print "%s: ... Mains power has returned, turning off lights that were not on prior to outage:" % datestamp()
 			for light in off_lights:
-				print("%s: Turning off %s" % (datestamp(), light.name))
+				print "%s: Turning off %s" % (datestamp(), light.name)
 				light.on = False
 			return 0
 		time.sleep(check_interval)
