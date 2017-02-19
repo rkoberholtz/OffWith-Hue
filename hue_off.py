@@ -83,7 +83,6 @@ def main(argv):
 	print ("Mode: %s" % mode)
 	input("Press enter to continue")	
 	'''	
-	
 	# Read in status from last time app ran
 	try:
 		with open("off.lights") as f:
@@ -123,7 +122,7 @@ def main(argv):
 	while True:
 		
 		if checkCyberPowerOutage():
-			waitSetlights(off_lights,check_interval)
+			waitSetlights(off_lights,check_interval,mode)
 		
 		try:
 			lights_list = bridge.get_light_objects('list')
@@ -172,6 +171,8 @@ def optUsage():
 	print("    -b, --bridge | IP address of your Hue Bridge")
 	print("    -c, --createnew | Connect to a new Hue Bridge")
 	print("    -i, --interval | Set how often (in seconds) to check the pwrstatd log. Defaults to 60")
+	print("    -m, --mode | Set the mode for checking if there's a power outage")
+        print("                 Options: 'cyberpower' or 'nut'")
 	return 0
 
 def checkCyberPowerOutage():
@@ -186,12 +187,23 @@ def checkCyberPowerOutage():
         	# No power failure... some other problem.  Don't touch the lights.
 		print("%s:Mains power OK" % datestamp())
 		return False
+def checkNutOutage():
+	# This function returns True if the Nut Server sends an outage alert.
 	
-def waitSetlights(off_lights,check_interval):
+	#placeholder return
+	return True
+
+def waitSetlights(off_lights,check_interval,mode):
 	# Periodically check for return to Utility power, and then turn off lights that were off prior to event.
 	while True:
 		# Loop in here until mains power returns
-		outage = checkPowerOutage()
+		
+		# Determine which mode we're operating in and check for power outage accordingly
+		if mode == "cyberpower":
+			outage = checkCyberPowerOutage()
+		elif mode == "nut":
+			outage = checkNutOutage()
+		#
 		if not outage:
 			# Turn off the lights that were off prior to the power outage
 			print("%s: ... Mains power has returned, turning off lights that were not on prior to outage:" % datestamp())
