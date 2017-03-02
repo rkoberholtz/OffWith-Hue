@@ -115,13 +115,17 @@ def main(argv):
 	if createnew:
 		print("You've requested to connect to a new Bridge.  Connecting...")
 		print("Press the button on your Bridge, then press Enter.")
-		bridge.connect()
+		try:
+			bridge.connect()
+		except:
+			print("Bridge connect failed")
+		bridge.get_api()
 	
 	# Main guts of the program
 	# Start an endless loop
 	while True:
 		
-		if checkCyberPowerOutage():
+		if checkForPowerOutage(mode):
 			waitSetlights(off_lights,check_interval,mode)
 		
 		try:
@@ -172,8 +176,14 @@ def optUsage():
 	print("    -c, --createnew | Connect to a new Hue Bridge")
 	print("    -i, --interval | Set how often (in seconds) to check the pwrstatd log. Defaults to 60")
 	print("    -m, --mode | Set the mode for checking if there's a power outage")
-        print("                 Options: 'cyberpower' or 'nut'")
+	print("                 Options: 'cyberpower' or 'nut'")
 	return 0
+
+def checkForPowerOutage(mode):
+	if mode == "cyberpower":
+		return checkCyberPowerOutage()
+	else:
+		return checkNutOutage()
 
 def checkCyberPowerOutage():
 	# This function checks the current pwrstatd process to see if we're on utility power or not.
@@ -187,11 +197,32 @@ def checkCyberPowerOutage():
         	# No power failure... some other problem.  Don't touch the lights.
 		print("%s:Mains power OK" % datestamp())
 		return False
+
+
 def checkNutOutage():
 	# This function returns True if the Nut Server sends an outage alert.
 	
-	#placeholder return
-	return True
+	#Search for "on battery"
+	if watchLog("on battery","/var/log/syslog"):
+		return False
+	elif watchLog("on line power","/var/log/syslog"):
+		return True
+	
+
+def watchLog(watchfor,watchfile):
+	# This function will watch watchfile (path to file in filesystem) for watchfor (string)
+	#   then return the line it found
+	
+	f = open(watchfile, "r")
+	
+	f.seek(0,2) # Go to the end of the file
+	while True:
+		line = f.readline()
+		if not line:
+			time.sleep(0.1) # Sleep briefly
+			continue
+		f.close()
+		return True
 
 def waitSetlights(off_lights,check_interval,mode):
 	# Periodically check for return to Utility power, and then turn off lights that were off prior to event.
