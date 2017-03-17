@@ -154,7 +154,7 @@ def optUsage():
 	print("    -i, --interval | Set how often (in seconds) to check the pwrstatd log. Defaults to 60")
 	print("    -m, --mode | Set the mode for checking if there's a power outage")
 	print("                 Options: 'cyberpower' or 'nut'")
-	print("    --logfile | Specify the logfile to monitor if choosing 'nut' mode"
+	print("    --logfile | Specify the logfile to monitor if choosing 'nut' mode")
 	return 0
 
 
