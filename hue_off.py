@@ -88,30 +88,7 @@ def main(argv):
 	print ("Mode: %s" % mode)
 	print ("Logfile: %s" % logfile)
 	input("Press enter to continue")	
-	'''	
-	# Read in status from last time app ran
-	try:
-		with open("off.lights", 'r') as f:
-			prev_status = f.readlines()
-		f.close()
-	except:
-		print("Error reading file.")
-	
-	# Check if prev_status contains items
-	if prev_status:
-		if prev_status[1] == bridgeIP:
-			# Same bridge as before, apply the light status!
-			lights_list = bridge.get_light_objects('list')
-		
-			# Since the only names in the file are lights that should be off
-			#  let's turn any light name in the file off.
-			print("Searching off.lights for lights that were previously off...")
-			for light in lights_list:
-				for line in prev_status:
-					if light.name == line[:-1]:
-						light.on = "off"
-						print("Turning off: %s" % line)				
-	
+	'''
 
 	try:
 		bridge = Bridge(bridgeIP)	
@@ -126,6 +103,9 @@ def main(argv):
 		except:
 			print("Bridge connect failed")
 		bridge.get_api()
+	
+	# Turn off any lights listed in the off.lights file from last run
+	turnOffLights(bridge)	
 	
 	# Main guts of the program
 	cmd = ("python3 updateLightStatus.py -b " + str(bridgeIP))
