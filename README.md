@@ -2,8 +2,9 @@
 1. *nix machine
 2. **[Phue](https://github.com/studioimaginaire/phue)** python library. Install using pip
 <pre>pip install phue</pre>
-3. A CyberPower UPS device connected to your machine
-4. CyberPower's pwrstatd daemon (PowerPanel)
+3. A CyberPower UPS device connected to your machine OR Network UPS Tools configured device
+
+CyberPower's pwrstatd daemon (PowerPanel) can be downloaded here:
     * Download here: http://www.cyberpower-eu.com/products/software/pp_linux.htm
     
 # Description
@@ -21,8 +22,8 @@
 ```
 # hue_off.py -h
 Options Usage:
--b, --bridge | IP address of your Hue Bridge<br>
--c, --createuser | Create a new user on your Hue Bridge<br>
+-b, --bridge | IP address of your Hue Bridge
+-c, --createuser | Create a new user on your Hue Bridge
 -i, --interval | Set how often (in seconds) to check the pwrstatd log. 
     Defaults to 60, only used for CyberPower monitoring
 -m, --mode | Set the mode for checking power status
