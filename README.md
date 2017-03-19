@@ -4,9 +4,9 @@
 <pre>pip install phue</pre>
 3. A CyberPower UPS device connected to your machine OR Network UPS Tools configured device
 
-CyberPower's pwrstatd daemon (PowerPanel) can be downloaded here:
-    * Download here: http://www.cyberpower-eu.com/products/software/pp_linux.htm
-    
+<br>
+CyberPower's pwrstatd daemon (PowerPanel) can be downloaded here: http://www.cyberpower-eu.com/products/software/pp_linux.htm <br>
+<br>  
 # Description
   This program will turn off lights that are controlled through your Philips Hue bridge after 
     a power outage.  To determine whether a power outage has occurred, it can use CyberPower's 
