@@ -15,7 +15,7 @@
 	rich@rickelobe.com
 	https://gitlab.rickelobe.com
 
-Copyright (c) 2016, Richard K. Oberholtzer
+Copyright (c) 2017, Richard K. Oberholtzer
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -35,28 +35,34 @@ Copyright (c) 2016, Richard K. Oberholtzer
 import sys
 import getopt
 from phue import Bridge
-import commands
+import subprocess
 import time
+import gevent
 
 def main(argv):
 
 	# IP address of your Hue Bridge
 	bridgeIP = "0"
 	createnew = False
+	global off_lights
 	off_lights = []
 	powerfailure = False
+	prev_status = []	
+	username = ""
+	mode = ""	# Mode Options: cyberpower, nut
+	logfile = ""
 
 	# How often (in seconds) to check the pwrstatd log for events
 	check_interval = 60
 
 	# Parse the options
 	try:
-		opts, args = getopt.getopt(argv,"hb:ci:",["bridge=","createnew=","interval="])
+		opts, args = getopt.getopt(argv,"hb:ci:m:l",["bridge=","createnew=","interval=","mode=","logfile="])
 	except getopt.GetoptError:
 		optUsage()
 		sys.exit(2)
 	except ValueError:
-		print "Incorrect option usage!"
+		print("Incorrect option usage!")
 		opUsage()
 		sys.exit(2)
 	for opt, arg in opts:
@@ -69,61 +75,87 @@ def main(argv):
 			createnew = True
 		elif opt in ("-i", "--interval"):
 			check_interval = float(arg)
-	"""	
-	# Debugging
-	print "Bridge IP: %s" % bridgeIP
-	print "Createnew: %s" % createnew
-	print "Username: %s" % username
-	raw_input("Press enter to continue")	
-	"""	
-	
-	"""	
-	# Read in status from last time app ran
-	# 
-	try:
-		with open("off.lights") as f:
-			prev_status = f.readlines()
-		f.close()
-		
-	except:
-		print "Error reading file."
+		elif opt in ("-m", "--mode"):
+			mode = arg.lower()
+		elif opt in ("-l", "--logfile"):
+			logfile	= arg
 
-	# Print the read-in contents of file
-	for line in prev_status:
-		print(line)
-	
-	
-	raw_input("Press Enter")
-	print(prev_status[1])
-	raw_input("Press Enter Again")
-	#if prev_status[1] == bridge:
-	
-	"""		
+	'''			
+	# Debugging
+	print ("Bridge IP: %s" % bridgeIP)
+	print ("Createnew: %s" % createnew)
+	print ("Username: %s" % username)
+	print ("Mode: %s" % mode)
+	print ("Logfile: %s" % logfile)
+	input("Press enter to continue")	
+	'''
 
 	try:
 		bridge = Bridge(bridgeIP)	
 	except:
-		print "Error, App not registered.  Press Bridge button and try again."	
+		print("Error, App not registered.  Press Bridge button and try again.")	
 
 	if createnew:
-		print "You've requested to connect to a new Bridge.  Connecting..."
-		print "Press the button on your Bridge, then press Enter."
-		bridge.connect()
+		print("You've requested to connect to a new Bridge.  Connecting...")
+		print("Press the button on your Bridge, then press Enter.")
+		try:
+			bridge.connect()
+		except:
+			print("Bridge connect failed")
+		bridge.get_api()
+	
+	# Turn off any lights listed in the off.lights file from last run
+	turnOffLights(bridge)	
 	
 	# Main guts of the program
+	cmd = ("python3 updateLightStatus.py -b " + str(bridgeIP))
+	print(cmd)
+	p = subprocess.Popen(str(cmd), shell=True)
+	#p = subprocess.Popen('python3 updateLightStatus.py -b 10.3.0.120', shell=True)
+	print("Spun off updateLightStatus process")
+	
 	# Start an endless loop
 	while True:
+		print("Waiting for power failure")
+		state = checkForPowerOutage(mode,logfile)
+		if state:
+			waitSetlights(bridge,check_interval,mode,logfile)
 		
-		if checkPowerOutage():
-			waitSetlights(off_lights,check_interval)
-		
+		#Pause	
+		time.sleep(check_interval)	
+	# End of endless loop... hmm
+
+def optUsage():
+	# This function displays options usage information
+
+	print("Options Usage:")
+	print("    -b, --bridge | IP address of your Hue Bridge")
+	print("    -c, --createnew | Connect to a new Hue Bridge")
+	print("    -i, --interval | Set how often (in seconds) to check the pwrstatd log. Defaults to 60")
+	print("    -m, --mode | Set the mode for checking if there's a power outage")
+	print("                 Options: 'cyberpower' or 'nut'")
+	print("    --logfile | Specify the logfile to monitor if choosing 'nut' mode")
+	return 0
+
+
+'''
+No Longer Needed: broke out into subprocess
+def updateLightStatus(bridgeIP):
+	bridge = Bridge(bridgeIP)
+	while True:
 		try:
 			lights_list = bridge.get_light_objects('list')
+			#print "Got list of lights"
 			lights_file = open("off.lights", 'w')
+			#print "Opened off.lights"
 			lights_file.truncate()
+			#print "Truncated off.lights"
 			lights_file.write(datestamp())
+			#print "Wrote datestamp to file"
 			lights_file.write("\n")
+			#print "Wrote newline"
 			lights_file.write(bridgeIP)
+			#print "Wrote BridgeIP"
 			lights_file.write("\n")
 			# Store list of lights that are currently off
 			off_lights = []
@@ -135,55 +167,105 @@ def main(argv):
 			lights_file.close()
 		except:
 			# Unknown exception!
-			print "%s: An unknown exception has appeared..." % datestamp()
+			print("%s: An unknown exception has appeared..." % datestamp())
+			bridge.get_api()
+		time.sleep(5)
+'''
+
+def turnOffLights(bridge):
 	
-		#Pause	
-		time.sleep(check_interval)	
+	try:
+		with open("off.lights") as f:
+			prev_status = f.readlines()
+		f.close()
+	except:
+		print("Error reading file.")
+
+	# Check if prev_status contains items
+	if prev_status:
+		# Same bridge as before, apply the light status!
+		lights_list = bridge.get_light_objects('list')
+
+		# Since the only names in the file are lights that should be off
+		#  let's turn any light name in the file off.
+		print("Searching off.lights for lights that were previously off...")
+		for light in lights_list:
+			for line in prev_status:
+				if light.name == line[:-1]:
+					light.on = False
+					print("Turning off: %s" % line)
 		
-	# End of endless loop... hmm
-	"""
-	# Print the name of the lights that are Off
-	for light in off_lights:
-		print(light.name)		
-	"""
-
-	raw_input("Press Enter")
-
-
-
-def optUsage():
-	# This function displays options usage information
-
-	print "Options Usage:"
-	print "    -b, --bridge | IP address of your Hue Bridge"
-	print "    -c, --createnew | Connect to a new Hue Bridge"
-	print "    -i, --interval | Set how often (in seconds) to check the pwrstatd log. Defaults to 60"
 	return 0
 
-def checkPowerOutage():
+def checkForPowerOutage(mode,logfile):
+	if mode == "cyberpower":
+		return checkCyberPowerOutage()
+	else:
+		return checkNutOutage(logfile)
+
+def checkCyberPowerOutage():
 	# This function checks the current pwrstatd process to see if we're on utility power or not.
 
-	pwrstatus = commands.getstatusoutput("pwrstat -status | grep 'Power Supply'")
-        if "Utility" not in pwrstatus[1]:
-	        # We have a power failure!
-		print "%s:Mains power FAILURE" % datestamp()
-                return True
-        else:
-                # No power failure... some other problem.  Don't touch the lights.
-		print "%s:Mains power OK" % datestamp()
+	pwrstatus = subprocess.getstatusoutput("pwrstat -status | grep 'Power Supply'")
+	if "Utility" not in pwrstatus[1]:
+		# We have a power failure!
+		print("%s:Mains power FAILURE" % datestamp())
+		return True
+	else:
+        	# No power failure... some other problem.  Don't touch the lights.
+		print("%s:Mains power OK" % datestamp())
+		return False
+
+
+def checkNutOutage(logfile):
+	# This function returns True if the Nut Server sends an outage alert.
+	
+	#Search for "on battery"
+	if watchLog("on battery","on line power",str(logfile)):
+		print("%s:Mains power FAILURE" % datestamp())
+		return True
+	else:
+		print("%s:Mains power OK" % datestamp())
 		return False
 	
-def waitSetlights(off_lights,check_interval):
+
+def watchLog(watchfortrue,watchforfalse,watchfile):
+	# This function will watch watchfile (path to file in filesystem) for watchfor (string)
+	#   then return the line it found
+	
+	f = open(watchfile, "r")
+	
+	f.seek(0,2) # Go to the end of the file
+	while True:
+		line = f.readline()
+		if not line:
+			time.sleep(0.1) # Sleep briefly
+			continue
+		if line.find(watchfortrue) >= 0:
+			f.close()
+			return True
+		elif line.find(watchforfalse) >= 0:
+			f.close()
+			return False
+
+def waitSetlights(bridge,check_interval,mode,logfile):
 	# Periodically check for return to Utility power, and then turn off lights that were off prior to event.
+	print("Waiting for power to return")
 	while True:
 		# Loop in here until mains power returns
-		outage = checkPowerOutage()
+		
+		outage = checkForPowerOutage(mode,logfile)
+		
+		#
 		if not outage:
 			# Turn off the lights that were off prior to the power outage
-			print "%s: ... Mains power has returned, turning off lights that were not on prior to outage:" % datestamp()
+			print("%s: ... Mains power has returned, turning off lights that were not on prior to outage:" % datestamp())
+			turnOffLights(bridge)
+			'''
 			for light in off_lights:
-				print "%s: Turning off %s" % (datestamp(), light.name)
+				print("%s: Turning off %s" % (datestamp(), light.name))
 				light.on = False
+			'''
 			return 0
 		time.sleep(check_interval)
 	return 0
