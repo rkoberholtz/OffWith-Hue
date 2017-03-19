@@ -138,40 +138,6 @@ def optUsage():
 	return 0
 
 
-'''
-No Longer Needed: broke out into subprocess
-def updateLightStatus(bridgeIP):
-	bridge = Bridge(bridgeIP)
-	while True:
-		try:
-			lights_list = bridge.get_light_objects('list')
-			#print "Got list of lights"
-			lights_file = open("off.lights", 'w')
-			#print "Opened off.lights"
-			lights_file.truncate()
-			#print "Truncated off.lights"
-			lights_file.write(datestamp())
-			#print "Wrote datestamp to file"
-			lights_file.write("\n")
-			#print "Wrote newline"
-			lights_file.write(bridgeIP)
-			#print "Wrote BridgeIP"
-			lights_file.write("\n")
-			# Store list of lights that are currently off
-			off_lights = []
-			for light in lights_list:
-				if not light.on:
-					off_lights.append(light)
-					lights_file.write(light.name)
-					lights_file.write("\n")
-			lights_file.close()
-		except:
-			# Unknown exception!
-			print("%s: An unknown exception has appeared..." % datestamp())
-			bridge.get_api()
-		time.sleep(5)
-'''
-
 def turnOffLights(bridge):
 	
 	try:
