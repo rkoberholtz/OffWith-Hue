@@ -57,7 +57,7 @@ def main(argv):
 
 	# Parse the options
 	try:
-		opts, args = getopt.getopt(argv,"hb:ci:m:l",["bridge=","createnew=","interval=","mode=","logfile="])
+		opts, args = getopt.getopt(argv,"hb:c:i:m:l",["bridge=","createnew=","interval=","mode=","logfile="])
 	except getopt.GetoptError:
 		optUsage()
 		sys.exit(2)
@@ -73,6 +73,7 @@ def main(argv):
 			bridgeIP = arg
 		elif opt in ("-c", "--createnew"):
 			createnew = True
+			bridgeIP = arg
 		elif opt in ("-i", "--interval"):
 			check_interval = float(arg)
 		elif opt in ("-m", "--mode"):
