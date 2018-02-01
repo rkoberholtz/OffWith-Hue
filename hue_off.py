@@ -98,6 +98,7 @@ def main(argv):
 	if createnew:
 		print("You've requested to connect to a new Bridge.  Connecting...")
 		print("Press the button on your Bridge, then press Enter.")
+		bridge = Bridge(bridgeIP)
 		try:
 			bridge.connect()
 		except:
