@@ -1,3 +1,5 @@
+***This Project lives @ https://gitlab.rickelobe.com/Rich/OffWith-Hue ***
+
 # Prerequisits
 1. *nix machine
 2. **[Phue](https://github.com/studioimaginaire/phue)** python library. Install using pip
