@@ -6,6 +6,7 @@
 <pre>pip install phue</pre>
 3. A CyberPower UPS device connected to your machine OR Network UPS Tools configured device
 
+
 <br>
 CyberPower's pwrstatd daemon (PowerPanel) can be downloaded here: http://www.cyberpower-eu.com/products/software/pp_linux.htm <br>
 <br>  
@@ -35,7 +36,7 @@ Options Usage:
     Typically "/var/log/syslog"
 ```
 
-**Example #2:** Start and connect to Hue Bridge at IP 192.168.1.101
+**Example #2:** Start and connect to Hue Bridge at IP 192.168.1.101, set mode to parse NUT log, and specify log file to monitor
 ```
-# hue_off.py -b 192.168.1.101
+# hue_off.py -b 192.168.1.101 -m nut --logfile /var/log/messages.log
 ```
