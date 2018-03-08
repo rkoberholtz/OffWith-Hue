@@ -79,7 +79,8 @@ def main(argv):
 	try:
 		bridge = Bridge(bridgeIP)	
 	except:
-		print("Error, App not registered.  Press Bridge button and try again.")	
+		print("Error, App not registered.  Press Bridge button and try again.")
+        quit()
 
 	if createnew:
 		print("You've requested to connect to a new Bridge.  Connecting...")
